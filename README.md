@@ -2,7 +2,7 @@
 
 A peer-to-peer campus marketplace for Dakota State University students,
 rebuilt as a web app from the original C# console app
-([Campus-Marketplace-Application2](https://github.com/THefisrt-tech/Campus-Marketplace-Application2)).
+([Campus-Marketplace-Application2](https://github.com/abel-wolde/Campus-Marketplace-Application2)).
 
 The console version had user registration, password hashing, item listings,
 and search/filtering — all in a single file with no persistence. This rebuild
@@ -127,4 +127,4 @@ cents (`price_cents`) to avoid floating-point rounding.
 ## Author
 
 Abel Wolde — Computer Science, Dakota State University (expected May 2029).
-GitHub: https://github.com/THefisrt-tech
+GitHub: https://github.com/abel-wolde
