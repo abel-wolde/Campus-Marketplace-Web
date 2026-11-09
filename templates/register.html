@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Register — Campus Marketplace{% endblock %}
+{% block content %}
+<h1>Create an account</h1>
+<form id="register-form" class="form">
+  <label>Name <input type="text" name="name" required autocomplete="name"></label>
+  <label>Email <input type="email" name="email" required autocomplete="email"></label>
+  <label>Password <input type="password" name="password" required minlength="8" autocomplete="new-password"></label>
+  <p class="hint">At least 8 characters. Passwords are stored hashed, never in plain text.</p>
+  <p id="error" class="error" role="alert"></p>
+  <button type="submit">Register</button>
+</form>
+<p>Already have an account? <a href="/login">Log in</a>.</p>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.getElementById('register-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const res = await fetch('/api/register', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+    if (res.ok) { window.location.href = '/'; return; }
+    const body = await res.json();
+    document.getElementById('error').textContent = body.error || 'Registration failed.';
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Buy &amp; sell on campus</h1>
+<p class="lede">Student-to-student listings at Dakota State University. Search by keyword, filter by category, or set a max price.</p>
+
+<form id="search-form" class="search">
+  <input type="search" id="q" name="q" placeholder="Search listings… e.g. textbook, laptop">
+  <select id="category" name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+  </select>
+  <input type="number" id="max_price" name="max_price" placeholder="Max price ($)" min="0" step="0.01">
+  <button type="submit">Search</button>
+</form>
+
+<p id="status" class="status"></p>
+<section id="listings" class="grid" aria-live="polite"></section>
+{% endblock %}
+{% block scripts %}
+<script>
+  const form = document.getElementById('search-form');
+  const grid = document.getElementById('listings');
+  const status = document.getElementById('status');
+
+  async function loadListings() {
+    const params = new URLSearchParams();
+    const q = document.getElementById('q').value.trim();
+    const category = document.getElementById('category').value;
+    const maxPrice = document.getElementById('max_price').value;
+    if (q) params.set('q', q);
+    if (category) params.set('category', category);
+    if (maxPrice) params.set('max_price', maxPrice);
+    status.textContent = 'Loading…';
+    const res = await fetch('/api/listings?' + params.toString());
+    const items = await res.json();
+    if (!items.length) {
+      status.textContent = 'No listings match — be the first to sell something.';
+      grid.innerHTML = '';
+      return;
+    }
+    status.textContent = items.length + ' listing' + (items.length === 1 ? '' : 's') + ' found.';
+    grid.innerHTML = items.map(item => `
+      <article class="card">
+        <h2>${escapeHtml(item.title)}</h2>
+        <p class="price">$${item.price_dollars.toFixed(2)}</p>
+        <p>${escapeHtml(item.description || 'No description.')}</p>
+        <p class="meta">${escapeHtml(item.category)} · ${escapeHtml(item.condition)} · sold by ${escapeHtml(item.seller_name)}</p>
+      </article>`).join('');
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  form.addEventListener('submit', e => { e.preventDefault(); loadListings(); });
+  loadListings();
+</script>
+{% endblock %}

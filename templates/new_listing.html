@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Sell an item — Campus Marketplace{% endblock %}
+{% block content %}
+<h1>Sell an item</h1>
+<form id="listing-form" class="form">
+  <label>Title <input type="text" name="title" required maxlength="120"></label>
+  <label>Description <textarea name="description" rows="4"></textarea></label>
+  <label>Price ($) <input type="number" name="price" required min="0" step="0.01"></label>
+  <label>Category
+    <select name="category" required>
+      {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Condition
+    <select name="condition" required>
+      {% for c in conditions %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+    </select>
+  </label>
+  <p id="error" class="error" role="alert"></p>
+  <button type="submit">Post listing</button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.getElementById('listing-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const res = await fetch('/api/listings', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+    if (res.ok) { window.location.href = '/'; return; }
+    const body = await res.json();
+    document.getElementById('error').textContent = body.error || 'Could not post the listing.';
+  });
+</script>
+{% endblock %}

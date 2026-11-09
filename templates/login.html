@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Log in — Campus Marketplace{% endblock %}
+{% block content %}
+<h1>Log in</h1>
+<form id="login-form" class="form">
+  <label>Email <input type="email" name="email" required autocomplete="email"></label>
+  <label>Password <input type="password" name="password" required autocomplete="current-password"></label>
+  <p id="error" class="error" role="alert"></p>
+  <button type="submit">Log in</button>
+</form>
+<p>No account yet? <a href="/register">Register</a>.</p>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const res = await fetch('/api/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+    if (res.ok) { window.location.href = '/'; return; }
+    const body = await res.json();
+    document.getElementById('error').textContent = body.error || 'Log in failed.';
+  });
+</script>
+{% endblock %}
